@@ -161,7 +161,7 @@ def run_scraper(headless=True):
     grouped_yest  = filter_and_group_rows(df_yest, "yesterday")
     combined = {ch: grouped_yest[ch]+grouped_today[ch] for ch in TARGET_CHANNELS}
 
-    get_gspread_credentials()
+    creds = get_gspread_credentials()
     sh_raw = gspread.authorize(creds).open_by_url(SPREADSHEET_URL)
     sh_final = gspread.authorize(creds).open_by_url(MASTER_SPREADSHEET_URL)
     try:
