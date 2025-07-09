@@ -27,8 +27,8 @@ from webdriver_manager.chrome import ChromeDriverManager
 from bs4 import BeautifulSoup
 
 # ── CONFIG ─────────────────────────────────────────────────────────────
-BASE_DIR = getattr(sys, '_MEIPASS', os.path.abspath(os.path.dirname(__file__)))
-SERVICE_ACCOUNT_FILE = os.path.join(BASE_DIR, "report_scraper.json")
+creds = service_account.Credentials.from_service_account_info(
+    st.secrets["gcp_service_account"])
 
 SCOPES = ["https://www.googleapis.com/auth/spreadsheets",
           "https://www.googleapis.com/auth/drive.readonly"]
