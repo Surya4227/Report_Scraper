@@ -97,9 +97,6 @@ def filter_and_group_rows(df: pd.DataFrame, mode: str):
         if t_int is None:
             continue
             
-parse_time_to_int_safe = lambda s: (
-    int(re.sub(r"[^\d]", "", str(s))) if pd.notna(s) and re.sub(r"[^\d]", "", str(s)).isdigit() else None)
-
         if mode == "yesterday":
             if t_int > 2359:
                 grouped[ch].append(row.iloc[2:6].tolist())
