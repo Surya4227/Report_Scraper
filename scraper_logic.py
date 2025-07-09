@@ -69,9 +69,7 @@ USERNAME = "rnd"
 PASSWORD = "rnd!@#"
 
 # ── HELPER UTILITIES ────────────────────────────────────────────────────
-# ... (same helper functions as before) ...
 
-# Modified this function:
 def download_drive_excels(folder_id):
     gauth = GoogleAuth()
     gauth.credentials = get_pydrive_credentials()
@@ -94,7 +92,7 @@ def upload_channel_to_gsheet(df,sheet_title,date_obj):
     df = df[df['s'].notna() & df['e'].notna() & (df['e']>=df['s']) & (df['e']<=2359)]
     if df.empty: return
     rows = [[date_obj.strftime('%Y-%m-%d')]*2 + [s,e] for s,e in zip(df['Start Time'],df['End Time'])]
-    creds = get_gcp_credentials().with_scopes(SCOPES)
+    creds = get_gspread_credentials()
     ws = gspread.authorize(creds).open_by_url(SPREADSHEET_URL).worksheet(sheet_title)
     ws.batch_clear(['A2:D'])
     ws.update(rows, 'A2')
@@ -124,7 +122,7 @@ def run_scraper(headless=True):
     grouped_yest  = filter_and_group_rows(df_yest, "yesterday")
     combined = {ch: grouped_yest[ch]+grouped_today[ch] for ch in TARGET_CHANNELS}
 
-    creds = get_gcp_credentials().with_scopes(SCOPES)
+    get_gspread_credentials()
     sh_raw = gspread.authorize(creds).open_by_url(SPREADSHEET_URL)
     sh_final = gspread.authorize(creds).open_by_url(MASTER_SPREADSHEET_URL)
     try:
