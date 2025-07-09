@@ -122,6 +122,27 @@ def normalize_time_string(s):
 parse_time_to_int_safe = lambda s: (
     int(re.sub(r"[^\d]", "", str(s))) if pd.notna(s) and re.sub(r"[^\d]", "", str(s)).isdigit() else None)
 
+def clean_dataframe(df: pd.DataFrame, ch: str):
+    if df.empty: return df.copy()
+
+    def minutes(hhmm):
+        if pd.isna(hhmm) or ":" not in str(hhmm): return 0
+        h, m = map(int, hhmm.split(":")); return h * 60 + m
+
+    keep = [abs(minutes(r["End Time"]) - minutes(r["Start Time"])) > 5 for _, r in df.iterrows()]
+    df = df.loc[keep].reset_index(drop=True)
+
+    rows = []
+    for _, r in df.iterrows():
+        if rows:
+            prev = rows[-1]
+            dup = str(r["Prog"]).strip().upper() == str(prev["Prog"]).strip().upper()
+            if dup and not (ch.upper() == "RCTI" and str(r["Prog"]).strip().upper() == "SINEMA"):
+                prev["End Time"] = r["End Time"]
+                continue
+        rows.append(r.copy())
+    return pd.DataFrame(rows)
+
 def download_drive_excels(folder_id):
     gauth = GoogleAuth()
     gauth.credentials = get_pydrive_credentials()
