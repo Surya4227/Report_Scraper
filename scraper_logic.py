@@ -8,6 +8,7 @@ import time
 import json
 from pathlib import Path
 from datetime import datetime, timedelta
+import streamlit as st
 
 import pandas as pd
 import gspread
@@ -16,6 +17,7 @@ from google.oauth2.service_account import Credentials
 
 from pydrive2.auth  import GoogleAuth
 from pydrive2.drive import GoogleDrive
+from google.oauth2 import service_account
 from oauth2client.service_account import ServiceAccountCredentials
 
 from selenium import webdriver
@@ -27,8 +29,10 @@ from webdriver_manager.chrome import ChromeDriverManager
 from bs4 import BeautifulSoup
 
 # ── CONFIG ─────────────────────────────────────────────────────────────
-creds = service_account.Credentials.from_service_account_info(
-    st.secrets["gcp_service_account"])
+def get_gcp_credentials():
+    return service_account.Credentials.from_service_account_info(
+        st.secrets["gcp_service_account"]
+    )
 
 SCOPES = ["https://www.googleapis.com/auth/spreadsheets",
           "https://www.googleapis.com/auth/drive.readonly"]
