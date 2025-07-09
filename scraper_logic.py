@@ -83,6 +83,29 @@ def extract_dates_from_filename(name: str):
         return [datetime(int(yr), m, int(d)).date()]
     return []
 
+def filter_and_group_rows(df: pd.DataFrame, mode: str):
+    df["t_int"] = df.iloc[:, 2].apply(parse_time_to_int_safe)
+
+    grouped = {ch: [] for ch in TARGET_CHANNELS}
+
+    for _, row in df.iterrows():
+        ch = str(row.iloc[0]).strip().upper()
+        if ch not in TARGET_CHANNELS:
+            continue
+
+        t_int = row["t_int"]
+        if t_int is None:
+            continue
+
+        if mode == "yesterday":
+            if t_int > 2359:
+                grouped[ch].append(row.iloc[2:6].tolist())
+        elif mode == "today":
+            if t_int <= 2359:
+                grouped[ch].append(row.iloc[2:6].tolist())
+
+    return grouped
+
 def download_drive_excels(folder_id):
     gauth = GoogleAuth()
     gauth.credentials = get_pydrive_credentials()
