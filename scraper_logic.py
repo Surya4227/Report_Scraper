@@ -122,6 +122,11 @@ def normalize_time_string(s):
 parse_time_to_int_safe = lambda s: (
     int(re.sub(r"[^\d]", "", str(s))) if pd.notna(s) and re.sub(r"[^\d]", "", str(s)).isdigit() else None)
 
+def split_genre(desc):
+    if pd.isna(desc): return "", ""
+    p = str(desc).split(":", 1)
+    return p[0].strip(), (p[1].strip() if len(p) > 1 else "")
+
 def clean_dataframe(df: pd.DataFrame, ch: str):
     if df.empty: return df.copy()
 
