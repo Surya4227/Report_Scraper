@@ -106,6 +106,9 @@ def filter_and_group_rows(df: pd.DataFrame, mode: str):
 
     return grouped
 
+parse_time_to_int_safe = lambda s: (
+    int(re.sub(r"[^\d]", "", str(s))) if pd.notna(s) and re.sub(r"[^\d]", "", str(s)).isdigit() else None)
+
 def download_drive_excels(folder_id):
     gauth = GoogleAuth()
     gauth.credentials = get_pydrive_credentials()
