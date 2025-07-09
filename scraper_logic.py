@@ -106,6 +106,19 @@ def filter_and_group_rows(df: pd.DataFrame, mode: str):
 
     return grouped
 
+def normalize_time_string(s):
+    if pd.isna(s):
+        return None
+    try:
+        parts = str(s).strip().split(":")
+        if len(parts) != 2 or not parts[0].isdigit() or not parts[1].isdigit():
+            return None
+        h = int(parts[0]) % 24
+        m = int(parts[1])
+        return f"{h:02}:{m:02}"
+    except:
+        return None
+
 parse_time_to_int_safe = lambda s: (
     int(re.sub(r"[^\d]", "", str(s))) if pd.notna(s) and re.sub(r"[^\d]", "", str(s)).isdigit() else None)
 
