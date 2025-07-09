@@ -178,6 +178,32 @@ def upload_channel_to_gsheet(df,sheet_title,date_obj):
         CellFormat(textFormat=TextFormat(fontFamily="Arial", fontSize=10),
                    horizontalAlignment="RIGHT"))
 
+def run_conviva_jobs(headless=True):
+    opt = webdriver.ChromeOptions()
+    if headless:
+        opt.add_argument('--headless=new')
+    opt.add_argument('--no-sandbox')
+    opt.add_argument('--disable-dev-shm-usage')
+    opt.add_argument('--disable-gpu')
+    
+    drv = webdriver.Chrome(service=Service(ChromeDriverManager().install()), options=opt)
+    wait = WebDriverWait(drv, 15)
+    try:
+        drv.get('https://rundek-00.mncplus.com')
+        wait.until(EC.visibility_of_element_located((By.ID, 'login'))).send_keys(USERNAME)
+        drv.find_element(By.ID, 'password').send_keys(PASSWORD)
+        drv.find_element(By.ID, 'btn-login').click()
+        wait.until(EC.url_contains('/menu'))
+        for jid in JOB_IDS:
+            drv.get(BASE_URL + jid)
+            wait.until(EC.element_to_be_clickable((By.ID, 'execFormRunButton'))).click()
+            time.sleep(1.0)
+    finally:
+        drv.quit()
+
+    print("⏳ Waiting 20 seconds for Output sheet to be filled…")
+    time.sleep(20)
+
 # Modified part of this function:
 def run_scraper(headless=True):
     files = download_drive_excels(DRIVE_FOLDER_ID)
