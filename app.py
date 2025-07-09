@@ -1,6 +1,8 @@
 import streamlit as st
 import os, tempfile
-from scraper_logic import run_scraper
+from scraper_logic import run_scraper, get_gcp_credentials
+
+creds = get_gcp_credentials()
 
 st.set_page_config(page_title="Report Scraper", layout="centered")
 
