@@ -69,6 +69,19 @@ USERNAME = "rnd"
 PASSWORD = "rnd!@#"
 
 # ── HELPER UTILITIES ────────────────────────────────────────────────────
+def extract_dates_from_filename(name: str):
+    name = name.upper()
+    r = re.search(r"(\d{1,2})-(\d{1,2})\s+([A-Z]+)\s+(\d{4})", name)
+    if r:
+        d1, d2, mon, yr = r.groups()
+        m = list(calendar.month_abbr).index(mon[:3].title())
+        return [datetime(int(yr), m, int(d1)).date(), datetime(int(yr), m, int(d2)).date()]
+    r = re.search(r"(\d{1,2})\s+([A-Z]+)\s+(\d{4})", name)
+    if r:
+        d, mon, yr = r.groups()
+        m = list(calendar.month_abbr).index(mon[:3].title())
+        return [datetime(int(yr), m, int(d)).date()]
+    return []
 
 def download_drive_excels(folder_id):
     gauth = GoogleAuth()
