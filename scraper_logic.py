@@ -37,6 +37,17 @@ def get_gcp_credentials():
 SCOPES = ["https://www.googleapis.com/auth/spreadsheets",
           "https://www.googleapis.com/auth/drive.readonly"]
 
+def get_gspread_credentials():
+    return service_account.Credentials.from_service_account_info(
+        st.secrets["gcp_service_account"]
+    ).with_scopes(SCOPES)
+    
+def get_pydrive_credentials():
+    return ServiceAccountCredentials.from_json_keyfile_dict(
+        st.secrets["gcp_service_account"],
+        scopes=["https://www.googleapis.com/auth/drive.readonly"]
+    )
+
 SPREADSHEET_URL        = "https://docs.google.com/spreadsheets/d/1tFrTn7iNN9IdQVONgjJgHVZkFwQo4GOIe3EPTH289hM"
 MASTER_SPREADSHEET_URL = "https://docs.google.com/spreadsheets/d/1NO5KnRCNV0oV_Qly757Ca9IA8_-pzbZ06CNfuuFkOCc"
 MASTER_TAB_NAME        = "ALL TV GDS ARRAZ"
@@ -62,9 +73,8 @@ PASSWORD = "rnd!@#"
 
 # Modified this function:
 def download_drive_excels(folder_id):
-    creds = get_gcp_credentials().with_scopes(["https://www.googleapis.com/auth/drive.readonly"])
     gauth = GoogleAuth()
-    gauth.credentials = creds
+    gauth.credentials = get_pydrive_credentials()
     drive = GoogleDrive(gauth)
     lst = drive.ListFile({'q': f"'{folder_id}' in parents and trashed=false"}).GetList()
     lst = [f for f in lst if f['title'].lower().endswith('.xlsx')]
